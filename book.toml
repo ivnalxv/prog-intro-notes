@@ -1,0 +1,6 @@
+[book]
+authors = ["Alexeev Ivan"]
+language = "en"
+multilingual = false
+src = "src"
+title = "prog-intro-notes"
