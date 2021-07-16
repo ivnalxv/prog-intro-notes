@@ -6,9 +6,14 @@ src = "src"
 title = "prog-intro-notes"
 
 [preprocessor.theme]
+# enable pagetoc (toc on the right)
+pagetoc                   = true
+
 # some variables related (defined in theme/css/variables.css)
 # `content-max-width` + `pagetoc-width` = 95% seems the best
+pagetoc-width            = "13%"
 content-max-width        = "82%"
+pagetoc-fontsize         = "14.5px"
 sidebar-width            = "300px"
 menu-bar-height          = "40px"   # memu-bar = the bar on the top
 page-padding             = "15px"
@@ -37,9 +42,14 @@ rust-inline-code-color  = "#F42C4C"
 light-links             = "#1f1fff"
 rust-links              = "#1f1fff"
 
+# if true, never read and touch the files in theme dir
+turn-off = false
+
+# If you set `pagetoc = true`, you need to set the following as well:
 [output.html]
-default-theme = "light"
-git-repository-url = ""
+theme          = "theme" # this is the default if not explicitly set
+additional-css = ["theme/pagetoc.css"]  # This tool will produce it!
+additional-js  = ["theme/pagetoc.js"]   # This tool will produce it!
 
 
 [output.html.fold]
