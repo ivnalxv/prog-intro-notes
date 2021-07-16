@@ -18,7 +18,7 @@ content-max-width        = "82%"
 pagetoc-fontsize         = "14.5px"
 sidebar-width            = "300px"
 menu-bar-height          = "40px"   # memu-bar = the bar on the top
-page-padding             = "50px"
+page-padding             = "15px"
 mobile-content-max-width = "98%"
 
 # layout
