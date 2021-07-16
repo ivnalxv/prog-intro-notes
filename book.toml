@@ -27,4 +27,4 @@ enable = false
 
 [output.theme-ace]
 theme-white = "xcode"
-theme-dark = "monokai"
+theme-dark = "one_dark"
