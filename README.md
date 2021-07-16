@@ -1,13 +1,12 @@
-# mdbook-template
+# cpp-notes
 
-Yield a mdbook demo with [mdbook-theme](https://github.com/zjp-CN/mdbook-theme)
-and a yml file for github action automation and page publication.
+Здесь собраны конспекты на записи лекций курса **"Введение в программирование"** студентам y2020 кафедры КТ в университете ИТМО.
 
-You just need to creat md files in `src/` dir, then add the filenames in `SUMMARY.md`,
-and everything is ready to go.
+Лектор - __Георгий Корнеев__
 
-But for the first time after pushing to github, set the source of github page to 
-`gh-pages` branch and `/(root)` in `Settings`.
+Конспекты содержат баги, поэтому не стесняйтесь вносить правки.
 
-Have fun with mdbook!
+#### Полезные ссылки:
 
+- [Сайт курса](https://www.kgeorgiy.info)
+- [Сайт с тестами](https://www.kgeorgiy.info/git/geo/paradigms-2021)
