@@ -9,7 +9,7 @@ title = "prog-intro-notes"
 #pagetoc = false
 #sidebar-width = "250px"
 # enable pagetoc (toc on the right)
-pagetoc                   = true
+pagetoc                   = false
 
 # some variables related (defined in theme/css/variables.css)
 # `content-max-width` + `pagetoc-width` = 95% seems the best
