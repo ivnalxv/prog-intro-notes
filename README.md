@@ -10,3 +10,4 @@
 
 - [Сайт курса](https://www.kgeorgiy.info)
 - [Сайт с тестами](https://www.kgeorgiy.info/git/geo/paradigms-2021)
+- [Самоссылка](https://ivnalxv.github.io/prog-intro-notes/02_arrays.html)
