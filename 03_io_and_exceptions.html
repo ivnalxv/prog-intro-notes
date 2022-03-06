@@ -1,0 +1,972 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Ввод-вывод и исключения - prog-intro-notes</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/pagetoc.css">
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="01_intro.html"><strong aria-hidden="true">1.</strong> Введение</a></li><li class="chapter-item expanded "><a href="02_arrays.html"><strong aria-hidden="true">2.</strong> Массивы и ссылки</a></li><li class="chapter-item expanded "><a href="03_io_and_exceptions.html" class="active"><strong aria-hidden="true">3.</strong> Ввод-вывод и исключения</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">prog-intro-notes</h1>
+
+                    <div class="right-buttons">
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="Ввод-вывод-и-исключения"><a class="header" href="#Ввод-вывод-и-исключения">Ввод-вывод и исключения</a></h1>
+<h2 id="Плавный-ввод-в-исключения"><a class="header" href="#Плавный-ввод-в-исключения">Плавный ввод в исключения</a></h2>
+<p>Давайте продолжим на чем мы остановились на предыдущей лекции — <code>Scanner</code>. Представьте себе, что нам хочется прочитать файл. Если изучить <a href="https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html">документацию</a>, то можно узнать, что <code>Scanner</code> принимает <code>java.io.File</code>:</p>
+<pre><code class="language-java">import java.util.Scanner;  
+import java.io.File;  
+  
+public class IOExample {  
+    public static void main(String[] args) {  
+        Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+        while (sc.hasNext()) {  
+            System.out.print(sc.next() + &quot; &quot;);  
+        }  
+    }  
+}
+</code></pre>
+<p>Компилируем программу, и... вылетает ошибка. Оказывается бывает <strong>FileNotFoundException</strong>, и он должен быть либо пойман, либо мы должны его пробросить. Странно. Мы уже сталкивались со всякими исключениями, вроде <strong>NullPointerException</strong>, <strong>ArrayIndexOutOfBoundsException</strong>, и ничего. А тут нас внезапно просят что-то сделать. Возникает вопрос --- а с чем это связано?</p>
+<p>Связано это с простым соображением --- если вылетает <strong>NullPointerException</strong>, то чья вина? Программиста. А если <strong>ArrayIndexOutOfBoundsException</strong>? Тоже программиста. А вот если мы запускаем программу, и файла <code>input.txt</code> нет, то чья вина? Правильно, пользователя! Программист с этим ничего сделать не может.</p>
+<p>Так вот, Java разделяет исключения на два вида --- <strong>проверяемые</strong> и <strong>непроверяемые</strong> исключения. <strong>FileNotFoundException</strong> относится к проверяемым исключениям, поэтому мы в явной форме должны его обработать.</p>
+<p>Именно для этого существует такая конструкция, как <code>try { ... } catch (...) { ... } </code>.</p>
+<p>К примеру вот так:</p>
+<pre><code class="language-java">try {  
+   Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+   while (sc.hasNext()) {  
+       System.out.print(sc.next() + &quot; &quot;);  
+   }  
+} catch (FileNotFoundException e) {  
+   System.out.println(&quot;input file not found!&quot;);  
+}
+</code></pre>
+<pre><code class="language-java">input file not found!
+</code></pre>
+<p>Понятно, что если добавить файл <code>input.txt</code>, то мы просто выведем все строки в этом файле. А что если запустить вот такой код?</p>
+<pre><code class="language-java">try {  
+   Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+   while (sc.hasNext()) {  
+       System.out.print(sc.nextInt() + &quot; &quot;);  
+   }  
+} catch (FileNotFoundException e) {  
+   System.out.println(&quot;input file not found!&quot;);  
+}
+</code></pre>
+<p>В таком случае мы рискуем словить <strong>InputMismatchException</strong>. Оно непроверяемое, а значит нас не заставляют его ловить, однако мы всё еще можем его поймать!</p>
+<pre><code class="language-java">try {  
+   Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+   while (sc.hasNext()) {  
+       System.out.print(sc.nextInt() + &quot; &quot;);  
+   }  
+} catch (InputMismatchException e) {  
+   System.out.println(&quot;invalid input!&quot;);  
+} catch (FileNotFoundException e) {  
+   System.out.println(&quot;input file not found!&quot;);  
+}
+</code></pre>
+<p>Теперь нам код может бросать исключения! Раньше, мы привыкли к тому, что они просто вываливались наружу, а мы потом смотрели на их описание из StackTrace. При желании мы исключение можем поймать, и обработать тем способом, что нам нравится. </p>
+<p>Также можно пробросить проверяемое исключение --- мы можем в явной форме сказать, что наш <code>main</code> бросает <strong>FileNotFoundException</strong>. Тогда мы его можем не ловить, но компилятор проверит --- окэй, вы исключение не поймали, но вы объявили, что ваш метод его может выбросить, поэтому код всё еще корректный!</p>
+<pre><code class="language-java">public static void main(String[] args) throws FileNotFoundException {  
+    try {  
+        Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+        while (sc.hasNext()) {  
+            System.out.print(sc.nextInt() + &quot; &quot;);  
+        }  
+    } catch (InputMismatchException e) {  
+        System.out.println(&quot;invalid input!&quot;);  
+    }  
+}
+</code></pre>
+<p>В принципе, разница в Java между проверяемыми и непроверяемыми исключениями заключается в том, что компилятор заставит нас в явной форме проверить, если исключение можно проверить. Либо нужно написать <code>try-catch</code>, либо указать, что метод может бросать проверяемое исключение.</p>
+<p>Для непроверяемых исключений эти правила не действуют. </p>
+<p>Давайте подумаем, много ли мы можем написать кода, который не бросает <strong>NullPointerException</strong>? Это значит, что мы не можем вызвать ни один метод ни на одном объекте. Заставлять вокруг каждой операции писать <strong>try-catch</strong> было бы странно.</p>
+<h2 id="100-фактов-об-исключениях"><a class="header" href="#100-фактов-об-исключениях">100 фактов об исключениях</a></h2>
+<h3 id="Сообщения"><a class="header" href="#Сообщения">Сообщения</a></h3>
+<p>Далее. У исключений есть всякие полезные вещи: например у каждого исключения есть сообщение, и его имеет смысл выводить пользователю:</p>
+<pre><code class="language-java">try {  
+    Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+    while (sc.hasNext()) {  
+        System.out.print(sc.next() + &quot; &quot;);  
+    }  
+} catch (InputMismatchException e) {  
+	  System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+} catch (FileNotFoundException e) {  
+    System.out.println(&quot;file not found: &quot; + e.getMessage());  
+}
+</code></pre>
+<pre><code class="language-java">file not found: input.txt (Не удается найти указанный файл)
+</code></pre>
+<p>Это та информация, что имеет смысл показывать пользователю.</p>
+<br/>
+<h3 id="stack-trace"><a class="header" href="#stack-trace">Stack Trace</a></h3>
+<p>Если нам хочется отладку, то мы всегда можем попросить StackTrace:</p>
+<pre><code class="language-java">try {  
+    Scanner sc = new Scanner(new File(&quot;input.txt&quot;));  
+    while (sc.hasNext()) {  
+        System.out.print(sc.next() + &quot; &quot;);  
+    }  
+} catch (FileNotFoundException e) {  
+    e.printStackTrace();  
+}
+</code></pre>
+<pre><code class="language-java">java.io.FileNotFoundException: input.txt (Не удается найти указанный файл)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:212)
+	at java.base/java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:154)
+	at java.base/java.util.Scanner.&lt;init&gt;(Scanner.java:639)
+	at IOExample.main(IOExample.java:8)
+</code></pre>
+<p>Нам честно напишут StackTrace ровно в той форме, как если бы мы его выбросили наружу. Понятно, что в основном это используется чтобы писать StackTrace в логи. </p>
+<p>То есть, мы исключение не выбросили, а обработали и руками написали StackTrace. В реальности Java при запуске вызывает метод <code>main</code> в <code>try-catch</code> для всех исключений, и для пойманного исключения пишется StackTrace. Магии нет, с тем же успехом можно сделать в своем коде руками.</p>
+<br/>
+<h3 id="Ответственность"><a class="header" href="#Ответственность">Ответственность</a></h3>
+<blockquote>
+<p>Вопрос --- нужно ли обрабатывать <strong>InputMismatchException</strong> от сканнера? Чья ответственность в том, что мы ожидали число, а там по факту не число?</p>
+</blockquote>
+<p>Это зависит --- либо могли мы написать неправильный кривой код изначально, либо мы могли учесть всё, но пользователь сам нарушил соглашение из документации, подав нам не тот объект. Нет однозначного ответа.</p>
+<p>Оно непроверяемое, поэтому Java не заставляет нас его ловить, однако если вы уверены, что оно вызовется, то лучше его поймать.</p>
+<br/>
+<h3 id="А-зачем-вообще"><a class="header" href="#А-зачем-вообще">А зачем вообще?</a></h3>
+<blockquote>
+<p>Вопрос --- вообще имеет ли смысл когда бы либо пробрасывать исключения? Мы сгенерировали исключения, и тут же их обработали! </p>
+</blockquote>
+<p>Понятно, что есть смысл. Вот пример:</p>
+<pre><code class="language-java">private Scanner scanFile(String filename) {  
+	return new Scanner(new File(filename));  
+}
+
+public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;);  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	} catch (FileNotFoundException e) {  
+		System.out.println(&quot;file not found: &quot; + e.getMessage());  
+	}
+}
+</code></pre>
+<p>Скомпилируется ли? </p>
+<p>Нет, потому что с одной стороны конструктор сканнера бросает исключение, а с другой стороны <code>scanFile</code> его не обрабатывает и не пробрасывает. </p>
+<p>В таком случае, можем ли мы его в <code>scanFile</code> как то обработать? Смогли создать сканнер, то вернули, не смогли, то просто сказали, что мол ну не получилось. </p>
+<p>Попробуем:</p>
+<pre><code class="language-java">private static Scanner scanFile(String filename) {
+	try {
+		return new Scanner(new File(filename));
+	} catch (FileNotFoundException e) {
+		System.out.println(&quot;file not found: &quot; + e.getMessage());
+	}
+}
+
+public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;);  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	} catch (FileNotFoundException e) {
+		System.out.println(&quot;file not found: &quot; + e.getMessage());
+	}
+}
+</code></pre>
+<p>Компилятор сказал две вещи. </p>
+<p>Первое, что наша функция ничего не вернула. Действительно, когда создание сканнера бросило исключение, то мы ничего не возвращаем и идем в <code>catch</code>-блок, после исполнения которого мы просто продолжаем исполнять код, и действительно ничего не возвращаем. Java проверяет, что если вы обещали что-то вернуть, то надо собственно вернуть.</p>
+<p>Давайте вернём <code>null</code>. Это конечно успокоит компилятор.</p>
+<p>Теперь ошибка номер два. Говорят, что <code>catch (FileNotFoundException e)</code> ничего не поймает. Давайте уберем:</p>
+<pre><code class="language-java">private static Scanner scanFile(String filename) {
+	try {
+		return new Scanner(new File(filename));
+	} catch (FileNotFoundException e) {
+		System.out.println(&quot;file not found: &quot; + e.getMessage());
+		return null;
+	}
+}
+
+public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;);  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	}
+}
+</code></pre>
+<br/>
+<p>Ой-ой, это породит <strong>NullPointerException</strong>, так как <code>scanFile</code> вернул <code>null</code>. И что делать? Писать так?</p>
+<pre><code class="language-java">public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;); 
+		if (sc != null) {
+			while (sc.hasNextInt()) {  
+				System.out.print(sc.nextInt() + &quot; &quot;);  
+			}
+		}
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	}
+}
+</code></pre>
+<br/>
+<p>Но это же неудобно! </p>
+<p>Собственно говоря, это идиоматический пример, когда имееет смысл пробросить исключение. </p>
+<pre><code class="language-java">private static Scanner scanFile(String filename) 
+		throws FileNotFoundException {  
+	return new Scanner(new File(filename));  
+}
+
+public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;);  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	} catch (FileNotFoundException e) {  
+		System.out.println(&quot;file not found: &quot; + e.getMessage());  
+	}
+</code></pre>
+<p>Не надо его пытаться здесь обрабатывать, мы <em>не знаем</em>, что с ним делать. </p>
+<p>Ну вот нам не удалось открыть файл на чтение. С точки зрения внешней программы может значить, что нужно сообщить пользователю, что файл должен быть. </p>
+<p>Вариант номер два, вполне нормально, что это какой то необязательный файл, тогда если нам не удалось его открыть для чтения, что это значит с точки зрения программы? Ничего, мы его просто проигнорировали. </p>
+<p>В любом случае, в методе <code>scanFile</code> недостаточно информации для обработки этого исключения, поэтому честно напишем, что метод пробрасывает исключение.</p>
+<pre><code class="language-java">private static Scanner scanFile(String filename)
+		throws FileNotFoundException {  
+	return new Scanner(new File(filename)); 
+}  
+</code></pre>
+<br/>
+<p>Тогда, разумеется, Java будет знать, что <code>scanFile</code> бросает исключение, тогда она заставит нас вернуть <code>try-catch</code> блок. Тут <strong>важно</strong>, что мы его будем обрабатывать ровно в том месте, когда мы знаем, что конкретно значит это исключение. У нас будут места, где неважно, они просто пробрасывают, однако мы найдем то место, где понятно, что с ним делать.</p>
+<p>Итого --- неверно утверждение, что нужно всегда обрабатывать исключение в том же методе, где оно образовалось. Нет, есть куча методов, где более-чем логично пробрасывать исключение выше.</p>
+<br/>
+<h2 id="Файл-мы-открыли-а-что-дальше"><a class="header" href="#Файл-мы-открыли-а-что-дальше">Файл мы открыли, а что дальше?</a></h2>
+<blockquote>
+<p>Хорошо, теперь давайте представим, что мы хотим записать что-то в <code>input.txt</code>. Сможем ли мы это сделать? </p>
+</blockquote>
+<p>На самом деле, это зависит много от чего. В чем проблема? </p>
+<p>У нас есть <code>Scanner</code>, который читает файл <code>input.txt</code>. Вопрос, можно ли записать в файл, открытый на чтение, зависит много от чего, и чаще всего ответ --- нет, хотя на некоторых OS ответ --- да.</p>
+<br/>
+<blockquote>
+<p>Тогда вопрос --- когда <code>Scanner</code> отпустит файл? </p>
+</blockquote>
+<p>Для этого у <code>Scanner</code> есть метод <code>close()</code>, позволяющий нам явно отпустить файл. </p>
+<pre><code class="language-java">private static Scanner scanFile(String filename) 
+		throws FileNotFoundException {  
+	return new Scanner(new File(filename));  
+}
+
+public static void main(String[] args) {  
+	try {  
+		Scanner sc = scanFile(&quot;input.txt&quot;);  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}
+		sc.close();
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	} catch (FileNotFoundException e) {  
+		System.out.println(&quot;file not found: &quot; + e.getMessage());  
+	}
+</code></pre>
+<p>Отлично, компилируется, метод <code>close()</code> не бросает исключения и освобождает ресурсы <code>input.txt</code>. </p>
+<h3 id="Кто-такой-ваш-этот-finally"><a class="header" href="#Кто-такой-ваш-этот-finally">Кто такой ваш этот <code>finally</code></a></h3>
+<blockquote>
+<p>Правда ли, что мы точно теперь всегда сможем в <code>input.txt</code> записать? </p>
+</blockquote>
+<p>На самом деле нет. Если мы словим <strong>FileNotFoundException</strong>, то всё хорошо, так как сканнер не существовал и в природе. А вот если случился <strong>InputMismatchException</strong>, то возникают проблемы, потому что нужно не забыть закрыть сканнер! </p>
+<pre><code class="language-java">try {  
+	Scanner sc = scanFile(&quot;input.txt&quot;);  
+	while (sc.hasNextInt()) {  
+		System.out.print(sc.nextInt() + &quot; &quot;);  
+	}  
+	sc.close();  
+} catch (InputMismatchException e) {  
+	System.out.println(&quot;invalid input: &quot; + e.getMessage());    
+	sc.close();  
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;file not found: &quot; + e.getMessage()); 
+}
+</code></pre>
+<br/>
+<p>Теперь всё хорошо?</p>
+<p>Нет. У нас нет <code>sc</code>, так как он определен в блоке <code>try</code>, а переменные из разных блоков не видят друг друга! </p>
+<p>Хорошо, а вот так?</p>
+<pre><code class="language-java">Scanner sc;  
+try {  
+	sc = scanFile(&quot;input.txt&quot;); // &lt;-- мисматч может тут возникнуть
+	while (sc.hasNextInt()) {  
+		System.out.print(sc.nextInt() + &quot; &quot;);  
+	}  
+	sc.close();  
+} catch (InputMismatchException e) {  
+	System.out.println(&quot;invalid input: &quot; + e.getMessage());   
+	sc.close();  // &lt;-- вот тут ошибка
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;file not found: &quot; + e.getMessage()); 
+}
+</code></pre>
+<br/>
+<p>Опять нет. </p>
+<p>Компилятор говорит, что <code>sc</code>  может быть даже не проинициализирован! С нашей точки зрения понятно, что <strong>InputMismatchException</strong> не может произойти до того как мы открыли сканнер, но с точки зрения Java --- это непроверяемое исключение, и оно может возникнуть где угодно. </p>
+<p>Давайте еще раз попытаемся исправить:</p>
+<pre><code class="language-java">Scanner sc = null;  
+try {  
+	sc = scanFile(&quot;input.txt&quot;);  
+	while (sc.hasNextInt()) {  
+		System.out.print(sc.nextInt() + &quot; &quot;);  
+	}  
+	sc.close();  
+} catch (InputMismatchException e) {  
+	System.out.println(&quot;invalid input: &quot; + e.getMessage());  
+	if (sc != null) sc.close(); 
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;file not found: &quot; + e.getMessage()); 
+}
+</code></pre>
+<br/>
+<p>Ура, оно скомпилировалось! </p>
+<p>Значит ли это, что мы смогли защитить себя со всех сторон? Спойлер, нет. </p>
+<p>Если произошел <strong>FileNotFoundException</strong>, то закрывать нечего. Замечательно. </p>
+<p>Если произошел <strong>InputMismatchException</strong>, то мы проверили и закрыли, если надо. </p>
+<p>Но мало ли тут еще исключений может выскочить! А что если где-то в <code>while</code> выскочит еще одно непроверяемое исключение? Тогда мы не закроем наш сканнер. </p>
+<p>И что же делать? </p>
+<p>Нам нужно сделать какое-то действие вне зависимости от того произошло какое-то исключение или нет. Это совершенно типичная ситуация, для решения которой есть <code>finally</code> блок:</p>
+<pre><code class="language-java">try {  
+	Scanner sc = scanFile(&quot;input.txt&quot;);  
+	try {  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} finally {  
+		sc.close();  
+	}  
+} catch (InputMismatchException e) {  
+	System.out.println(&quot;invalid input: &quot; + e.getMessage());
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;file not found: &quot; + e.getMessage()); 
+}
+</code></pre>
+<br/>
+<p>Какова логика работы <code>finally</code> блока? </p>
+<p>Вы пошли в <code>try</code> блок, и вне зависимости от того, как закончился <code>try</code> блок, соответствующий <code>finally</code> блок будет выполнен. </p>
+<p>В целом это стандартная идиома --- взять ресурс, открыть его, поработать с ним, и не забыть в <code>finally</code> блоке его закрыть. Если это не сделать, то это приводит к, так называемым, утечкам ресурсов.</p>
+<br/>
+<blockquote>
+<p>Гарантирует ли нам Java, что если не вызвать <code>.close()</code>, будет ли файл открыт на чтение? </p>
+</blockquote>
+<p>Нет, не гарантирует, так как мы потеряли ссылку на <code>Scanner</code>, и в любой момент может придти сборщик мусора и собрать ее, и это автоматически закроет вашу память. </p>
+<p>Проблема в том, что мы не можем предсказать когда это произойдет. То есть ресурсы утекли, через некоторое время они могут освободиться, а если у вас много памяти, и вы её всю не используете, то может никогда не освободятся.</p>
+<p>Очень плохая история. Поэтому если вы в явной форме берете какие-то ресурсы, к примеру открываете файл на чтение или запись, пишите соовтетсвующий <code>finally</code>-блок чтобы его закрыть.</p>
+<br/>
+<p>Теперь дальше. В целом в нашу конструкцию <code>try-finally</code> можно вписать произвольное количество блоков <code>catch</code>. </p>
+<p>Если код внутри <code>try</code> не бросил исключение, то все <code>catch</code> блоки игнорируются, и выполняется <code>finally</code> блок. </p>
+<p>Если код бросил исключение, и оно поймано одним из <code>catch</code> блоков, то после его обработки выполнится <code>finally</code> блок. </p>
+<p>Если ни один из <code>catch</code> блоков не поймал исключение, то его пробросят дальше, однако <code>finally</code> блок всё равно будет исполнен.</p>
+<pre><code class="language-java">try {  
+	Scanner sc = scanFile(&quot;input.txt&quot;);  
+	try {  
+		while (sc.hasNextInt()) {  
+			System.out.print(sc.nextInt() + &quot; &quot;);  
+		}  
+	} catch (InputMismatchException e) {  
+		System.out.println(&quot;invalid input: &quot; + e.getMessage());
+	} finally {  
+		sc.close();  
+	}  
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;file not found: &quot; + e.getMessage()); 
+}
+</code></pre>
+<br/>
+<blockquote>
+<p>Теперь вопрос на понимание --- можно ли <code>catch</code> блок с <strong>FileNotFoundException</strong> перенести вверх рядом с <strong>InputMismatchException</strong>? </p>
+</blockquote>
+<p>Нет, так <strong>InputMismatchException</strong> умеет вылетать только из внутреннего блока, а <strong>FileNotFoundException</strong> вылетает только из внешнего блока.</p>
+<p>Еще раз повторю, это --- стандартная идиома для работы с ресурсами.</p>
+<h2 id="Быстрый-ввод-и-вывод-и-кодировки"><a class="header" href="#Быстрый-ввод-и-вывод-и-кодировки">Быстрый ввод и вывод, и кодировки</a></h2>
+<h3 id="Знакомство-с-readerом"><a class="header" href="#Знакомство-с-readerом">Знакомство с <code>Reader</code>'ом</a></h3>
+<p>Теперь вопрос про людей, пробовавших считать с помощью <code>Scanner</code> миллион чисел. Работает медленно, правда? </p>
+<p>Дело в том, что сам <code>Scanner</code> реализован на регулярных выражениях, и он ими постоянно пытается понять -- число, или не число.  Понятно, что в лабах и реальной жизни нам придётся считывать много чисел, поэтому мы научимся, как это делать быстро!</p>
+<p>Для этого нам понадобятся классы <code>Reader</code> и <code>Writer</code>.</p>
+<p>Ну чтож, знакомьтесь с <code>FileReader</code>. Как следует из его названия, он читает из файла. Тут же его закроем, чтобы не забыть позднее. </p>
+<pre><code class="language-java">public static void main(String[] args) {  
+	FileReader reader = new FileReader(&quot;java-test/input.txt&quot;);  
+	try {  
+		System.out.println(reader.read());  
+	} finally {  
+		reader.close();  
+	}
+}
+</code></pre>
+<p>Данный код не скомпилируется, и вылетит с ошибкой. Даже не одной, а тремя! Во первых <strong>FileNotFoundException</strong> при открытии, и бывает <strong>IOException</strong> при закрытии и попытке чтения. </p>
+<p>Давайте попытаемся их обработать, однако нужно быть внимательными, так как <strong>FileNotFoundException</strong> является <strong>IOException</strong>, и мы можем прострелить себе ногу, если будем ловить их не в том порядке. Но в нашем случае, это работает нам на руку.</p>
+<pre><code>[input.txt]
+hello
+</code></pre>
+<pre><code class="language-java">try {  
+	FileReader reader = new FileReader(&quot;java-test/input.txt&quot;);  
+	try {  
+		System.out.println(reader.read());  
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<pre><code class="language-java">104
+</code></pre>
+<br/>
+<p>Должно вызвать недоумение. </p>
+<p>Программа сработала корректно, однако вместо <code>hello</code> мы получили 104. На самом деле всё хорошо, просто <code>reader.read()</code> читает один символ, и возвращает <code>int</code>. </p>
+<pre><code class="language-java">try {  
+	FileReader reader = new FileReader(&quot;java-test/input.txt&quot;);  
+	try {  
+		System.out.println((char) reader.read());  
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<pre><code class="language-java">h
+</code></pre>
+<br/>
+<p>Давайте попытаемся прочитать весь ввод. </p>
+<p>Однако мы упремся в стандартную проблему --- как понять что мы прочитали весь файл? </p>
+<p>Когда <code>.read()</code> достиг конца, он возвращает -1. Именно поэтому, он возвращает <code>int</code>, а не <code>char</code>. Логика такая --- <code>read()</code> читает совершенно любой символ, поэтому нам нужно вернуть значение, которое совершенно точно не символ.</p>
+<p>Вот так прочитать весь ввод:</p>
+<pre><code class="language-java">try {  
+	FileReader reader = new FileReader(&quot;java-test/input.txt&quot;);  
+	try {  
+		int input = reader.read();  
+		if (input == -1) break;  
+		System.out.println((char) input); 
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<br/>
+<p>Однако польза от символов по одному довольно сомнительна, поэтому давайте сделаем строку:</p>
+<pre><code class="language-java">String s = &quot;&quot;;  
+while (true) {  
+	int input = reader.read();  
+	if (input == -1) break;  
+	s += (char) input;  
+}  
+System.out.println(s);
+</code></pre>
+<br/>
+<p>Однако это имеет свою проблему. </p>
+<p>Давайте вспомним, что строчки в Java не изменяются, поэтому это работает за квадрат. Фактически мы копируем всю предыдущую часть строки и только потом добавлять. </p>
+<p>Но как тогда получить строчку? </p>
+<p>На помощь нам приходит замечательный класс <code>StringBuilder</code>, у которого есть метод <code>.append(char)</code>. Это гарантированно работает за линейное время, в отличии от складывания строк в цикле:</p>
+<pre><code class="language-java">StringBuilder s = new StringBuilder();  
+while (true) {  
+	int input = reader.read();  
+	if (input == -1) break;  
+	s.append((char) input);  
+}  
+System.out.println(s.toString());
+</code></pre>
+<p><strong>Пожалуйста никогда не складывайте строки в цикле</strong>.</p>
+<br/>
+<p>Итого, мы производим чтение посимвольно, но для каждого символы мы обращаемся к операционной системе, и просим этот символ. К сожалению производительность этого кода ещё хуже чем у сканера. Есть два варианта решения проблемы.</p>
+<p>Первый вариант --- можно считать за раз множество символов:</p>
+<pre><code class="language-java">try {  
+	Reader reader = new FileReader(&quot;java-test/input.txt&quot;);
+	try {
+		char[] buffer = new char[5]; 
+		while (true) {  
+			int read = reader.read(buffer);  
+			if (read == -1) break;
+			for (int i = 0; i &lt; read; i++) {
+				System.out.print(buffer[i]);
+			}
+			System.out.println();  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<p>В этом случае <code>read</code> --- это количество символов, которые были прочитаны в <code>buffer</code>, либо -1, если данные закончились. При этом в самом <code>buffer</code> гарантируется, что только первые <code>read</code> символов имеют смысл, в других может лежать просто какая-то рандомная информация.</p>
+<p>Заметьте, что окончание файла это совершенно штатная ситуация, и бросать исключения по этому поводу не имеет смысла. Исключения только для нештатных ситуаций.</p>
+<br/>
+<br/>
+<p>Второй вариант --- обернуть наш <code>FileReader</code> в <code>BufferedReader</code>. Он, как следует из названия, буфферизованный и у него внутри есть тот самый буффер с которым он ходит в OS и просит отдельный символ. Теперь у нас нак каждый отдельный символ syscall не происходит. Ура, мы сэкономили!</p>
+<p>Кроме того, у него есть полезный метод <code>readLine</code>. Метод возвращает, очевидно, <code>String</code>, а если все закончилось, то вернет то значение, которое не могло быть прочитано из файла --- к примеру <code>null</code>.</p>
+<pre><code class="language-java">try {  
+	Reader reader = new BufferedReader(
+		new FileReader(&quot;java-test/input.txt&quot;)
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<p><em>Примечание номер один</em>: что вообще такое строчка это нетривиальная вещь, и зависит от OS компьютера. Например в Windows окончание строки стандартное это CR и LF, в Linux или Unix это отдельный LF, в MacOS это отдельный \r. В целом в юникоде переводов строк много. Поэтому либо узнаете перевод строки в вашей OS, либо пользуетесь стандартным методом.</p>
+<p><em>Примечание номер два</em>: а что если там строчечка на несколько гигабайт. Очень грустно.</p>
+<p>Поэтому не очень хорошо пользоваться именно <code>readLine</code>  непосредственно. </p>
+<h3 id="Кодировки"><a class="header" href="#Кодировки">Кодировки</a></h3>
+<p>Давайте проверим, можно ли напрямую сказать про кодировку.</p>
+<pre><code class="language-java">try {  
+	Reader reader = new BufferedReader(
+		new FileReader(&quot;java-test/input.txt&quot;, &quot;utf8&quot;)
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<pre><code>[input.txt] UTF-8
+Привет
+</code></pre>
+<pre><code>[System.out] UTF-8
+Привет
+</code></pre>
+<p>Работает. Круто, но есть проблема.</p>
+<p>Вариант номер два это у вас не слишком свежая Java, и это не будет поддерживаться, тогда конструкция выглядит следующим забавным образом:</p>
+<pre><code class="language-java">try {  
+	Reader reader = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream(&quot;java-test/input.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println(&quot;Input read error: &quot; + e.getMessage());  
+}
+</code></pre>
+<p>Внутри у нас будет <code>InputStreamReader</code> --- это такой же <code>Reader</code>, просто он читает байтики, а не символы. Ему нужно передать откуда читаем байтики, это мы делаем из файла, поэтому там <code>FileInputStream</code>. Дальше кодировка.</p>
+<p>То есть мы открыли файл для ввода байт, проинтерпретировали его с использованием такой-то кодировки, и после чего этот ввод ещё и буфферизировали. И тогда всё также будет работать.</p>
+<h3 id="Привет-writer"><a class="header" href="#Привет-writer">Привет, <code>Writer</code></a></h3>
+<p>Как можно было догадаться, что раз есть <code>Reader</code>, то есть и <code>Writer</code>.</p>
+<pre><code class="language-java">try {  
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream(&quot;java-test/input.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
+		while (true) {  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
+	} finally {  
+		in.close();  
+	}
+	
+	Writer out = new FileWriter(&quot;java-test/output.txt&quot;);
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;Cannot open file:&quot; + e.getMessage());  
+} catch (IOException e) {  
+	System.out.println(&quot;Cannot read or write: &quot; + e.getMessage());  
+}
+</code></pre>
+<blockquote>
+<p>Давайте ещё раз потренируем вашу интуицию. Всё ли хорошо с кодом?</p>
+</blockquote>
+<p>Внезапно, код компилируется, и нет никаких не пойманных исключений. Что, правда ли, что код работает без исключений? </p>
+<p>Нет, он бросает проверяемое исключение. Но почему нам об этом Java не сказала?</p>
+<p>Потому что мы их уже поймали во внешнем <code>try</code>. Если у вас одинаковая обработка исключений, то не надо её дублировать.</p>
+<blockquote>
+<p>Сразу должен возникнуть вопрос --- а в какой кодировке он вывел текстовые данные? </p>
+</blockquote>
+<p>Он выведет в кодировке по умолчанию. У строчки нет кодировки, в которой она исходна ни в какой момент, нет, просто у виртуальной машины Java есть кодировка по умолчанию. Именно для этого, как и у <code>Reader</code>'а нам нужно написать очень похожую конструкцию для <code>Writer</code>'а:</p>
+<pre><code class="language-java">try {  
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream(&quot;java-test/input.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
+		while (true) {  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
+	} finally {  
+		in.close();  
+	}
+	
+	Writer out = new BufferedWriter(
+		new OutputStreamReader(
+			new FileOutputStream(&quot;java-test/output.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
+} catch (FileNotFoundException e) {  
+	System.out.println(&quot;Cannot open file:&quot; + e.getMessage());  
+} catch (IOException e) {  
+	System.out.println(&quot;Cannot read or write: &quot; + e.getMessage());  
+}
+</code></pre>
+<p>(На <a href="https://www.kgeorgiy.info/courses/prog-intro/index.html">сайте курса</a> есть более подробные примеры кода, если вы захотите посмотреть.)</p>
+<br/>
+<p>Давайте заметим, что если мы удалим один <code>catch</code>, то код продолжит компилироваться:</p>
+<pre><code class="language-java">try {  
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream(&quot;java-test/input.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
+		while (true) {  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
+	} finally {  
+		in.close();  
+	}
+	
+	Writer out = new BufferedWriter(
+		new OutputStreamReader(
+			new FileOutputStream(&quot;java-test/output.txt&quot;),
+			&quot;utf8&quot;
+		)
+	); 
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
+} catch (IOException e) {  
+	System.out.println(&quot;Cannot read or write: &quot; + e.getMessage());  
+}
+</code></pre>
+<blockquote>
+<p>Возникает вопрос, а почему?</p>
+</blockquote>
+<p>Если почитать документацию, то можно понять, что <strong>FileNotFoundException</strong> является <strong>IOException</strong>, поэтому Java это устраивает.</p>
+<p>Более того, если мы поменяем эти два <code>catch</code>'а местами, то Java это перестанет устраивать и она начнет нам сообщать, что <strong>FileNotFoundException</strong> уже пойман, потому что он являлся <strong>IOException</strong> и здесь мы его уже обработали.</p>
+<p>В этом случае второй <code>catch</code> никогда не будет выполнен, а как мы знаем Java любит предупреждать, если у нас есть код, который никогда не будет выполнен.</p>
+<p>Формально у нас не множество <code>catch</code>-блоков, а именно последовательность, и мы попадаем в первый <code>catch</code>-блок, совпадающий по типу.</p>
+<h3 id="printwriter-и-его-брат-printstream"><a class="header" href="#printwriter-и-его-брат-printstream"><code>PrintWriter</code> и его брат <code>PrintStream</code></a></h3>
+<p>Существует класс <code>PrintWriter</code>, и его аналог <code>PrintStream</code>. </p>
+<p>Преимуществом этих классов является то, что у них есть методы <code>print()</code> и <code>println()</code>, более того <code>System.out</code> это просто экземпляр <code>PrintStream</code>.</p>
+<p>Но тогда возникает вопрос, что происходит с ошибками. </p>
+<blockquote>
+<p>Что вообще происходит, когда в <code>System.out</code> мы не можем ничего вывести?</p>
+</blockquote>
+<p>Происходит буквально ничего. Ошибка будет проигнорирована. Соответственно, можно ли использовать <code>PrintWriter</code> и <code>PrintStream</code> для того, чтобы надежно писать в файлы? </p>
+<p>Нельзя. Получается, вы писали в файл, где-то в середине у вас кончилось место на диске, но об этом никто не узнал. Плохая идея.</p>
+<p>В целом, у них есть замечательный метод <code>cheackError()</code>, который позволяет узнать произошла ли какая-то ошибка. К сожалению вы не сможете узнать, что это была за ошибка, но можно хотя бы узнать, что то вообще сломалось.</p>
+<p>В целом использовать для сколько нибудь надежного кода <code>PrintWriter</code> и <code>PrintStream</code> не рекомендуется.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="02_arrays.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="02_arrays.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        <script type="text/javascript" src="theme/pagetoc.js"></script>
+    </body>
+</html>
