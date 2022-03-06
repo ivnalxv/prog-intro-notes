@@ -487,7 +487,9 @@ try {
 
 Еще раз повторю, это --- стандартная идиома для работы с ресурсами.
 
-## Быстрый ввод и вывод
+## Быстрый ввод и вывод, и кодировки
+
+### Знакомство с ``Reader``'ом
 
 Теперь вопрос про людей, пробовавших считать с помощью ``Scanner`` миллион чисел. Работает медленно, правда? 
 
@@ -582,7 +584,6 @@ try {
 
 Однако польза от символов по одному довольно сомнительна, поэтому давайте сделаем строку:
 ```java
-
 String s = "";  
 while (true) {  
 	int input = reader.read();  
@@ -616,25 +617,23 @@ System.out.println(s.toString());
 
 <br/>
 
-Итого, мы производим чтение посимвольно, но для каждого символы мы обращаемся к операционной системе, и просим этот символ. Всё еще не очень быстро. Два варианта решения проблемы.
+Итого, мы производим чтение посимвольно, но для каждого символы мы обращаемся к операционной системе, и просим этот символ. К сожалению производительность этого кода ещё хуже чем у сканера. Есть два варианта решения проблемы.
 
-Первый вариант --- обернуть наш ``FileReader`` в ``BufferedReader``. Из названия уже можно догадаться, что он делает. Он буфферизирует.
-
-Всё продолжает работать, только теперь, скорее всего быстрее. При необходимости можно указать ``BufferedReader`` размер буффера, но если не уверены лучше использовать значение по умолчанию.
+Первый вариант --- можно считать за раз множество символов:
 
 ```java
 try {  
-	Reader reader = new BufferedReader(
-		new FileReader("java-test/input.txt")
-	);  
-	try {  
-		StringBuilder s = new StringBuilder(); 
+	Reader reader = new FileReader("java-test/input.txt");
+	try {
+		char[] buffer = new char[5]; 
 		while (true) {  
-			int input = reader.read();  
-			if (input == -1) break;  
-			s.append((char) input);  
-		}  
-		System.out.println(s.toString());  
+			int read = reader.read(buffer);  
+			if (read == -1) break;
+			for (int i = 0; i < read; i++) {
+				System.out.print(buffer[i]);
+			}
+			System.out.println();  
+		}
 	} finally {  
 		reader.close();  
 	}  
@@ -642,63 +641,256 @@ try {
 	System.out.println("Input read error: " + e.getMessage());  
 }
 ```
+
+В этом случае ``read`` --- это количество символов, которые были прочитаны в ``buffer``, либо -1, если данные закончились. При этом в самом ``buffer`` гарантируется, что только первые ``read`` символов имеют смысл, в других может лежать просто какая-то рандомная информация.
+
+Заметьте, что окончание файла это совершенно штатная ситуация, и бросать исключения по этому поводу не имеет смысла. Исключения только для нештатных ситуаций.
+
+<br/>
+<br/>
+
+Второй вариант --- обернуть наш ``FileReader`` в ``BufferedReader``. Он, как следует из названия, буфферизованный и у него внутри есть тот самый буффер с которым он ходит в OS и просит отдельный символ. Теперь у нас нак каждый отдельный символ syscall не происходит. Ура, мы сэкономили!
+
+Кроме того, у него есть полезный метод ``readLine``. Метод возвращает, очевидно, ``String``, а если все закончилось, то вернет то значение, которое не могло быть прочитано из файла --- к примеру ``null``.
+
+```java
+try {  
+	Reader reader = new BufferedReader(
+		new FileReader("java-test/input.txt")
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println("Input read error: " + e.getMessage());  
+}
+```
+
+*Примечание номер один*: что вообще такое строчка это нетривиальная вещь, и зависит от OS компьютера. Например в Windows окончание строки стандартное это CR и LF, в Linux или Unix это отдельный LF, в MacOS это отдельный \r. В целом в юникоде переводов строк много. Поэтому либо узнаете перевод строки в вашей OS, либо пользуетесь стандартным методом.
+
+*Примечание номер два*: а что если там строчечка на несколько гигабайт. Очень грустно.
+
+Поэтому не очень хорошо пользоваться именно ``readLine``  непосредственно. 
+
+### Кодировки
+
+Давайте проверим, можно ли напрямую сказать про кодировку.
+
+```java
+try {  
+	Reader reader = new BufferedReader(
+		new FileReader("java-test/input.txt", "utf8")
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println("Input read error: " + e.getMessage());  
+}
+```
+```
+[input.txt] UTF-8
+Привет
+```
+```
+[System.out] UTF-8
+Привет
+```
+
+Работает. Круто, но есть проблема.
+
+Вариант номер два это у вас не слишком свежая Java, и это не будет поддерживаться, тогда конструкция выглядит следующим забавным образом:
+
+```java
+try {  
+	Reader reader = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream("java-test/input.txt"),
+			"utf8"
+		)
+	); 
+	try {
+		while (true) {  
+			String line = reader.readLine();
+			if (line == null) break;
+			System.out.println(line);  
+		}
+	} finally {  
+		reader.close();  
+	}  
+} catch (IOException e) {  
+	System.out.println("Input read error: " + e.getMessage());  
+}
+```
+
+Внутри у нас будет ``InputStreamReader`` --- это такой же ``Reader``, просто он читает байтики, а не символы. Ему нужно передать откуда читаем байтики, это мы делаем из файла, поэтому там ``FileInputStream``. Дальше кодировка.
+
+То есть мы открыли файл для ввода байт, проинтерпретировали его с использованием такой-то кодировки, и после чего этот ввод ещё и буфферизировали. И тогда всё также будет работать.
+
+### Привет, ``Writer``
+
+Как можно было догадаться, что раз есть ``Reader``, то есть и ``Writer``.
+
+```java
+try {  
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream("java-test/input.txt"),
+			"utf8"
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
+		while (true) {  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
+	} finally {  
+		in.close();  
+	}
+	
+	Writer out = new FileWriter("java-test/output.txt");
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
+} catch (FileNotFoundException e) {  
+	System.out.println("Cannot open file:" + e.getMessage());  
+} catch (IOException e) {  
+	System.out.println("Cannot read or write: " + e.getMessage());  
+}
+```
+
+>Давайте ещё раз потренируем вашу интуицию. Всё ли хорошо с кодом?
+
+Внезапно, код компилируется, и нет никаких не пойманных исключений. Что, правда ли, что код работает без исключений? 
+
+Нет, он бросает проверяемое исключение. Но почему нам об этом Java не сказала?
+
+Потому что мы их уже поймали во внешнем ``try``. Если у вас одинаковая обработка исключений, то не надо её дублировать.
+
+> Сразу должен возникнуть вопрос --- а в какой кодировке он вывел текстовые данные? 
+
+Он выведет в кодировке по умолчанию. У строчки нет кодировки, в которой она исходна ни в какой момент, нет, просто у виртуальной машины Java есть кодировка по умолчанию. Именно для этого, как и у ``Reader``'а нам нужно написать очень похожую конструкцию для ``Writer``'а:
+
+```java
+try {  
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream("java-test/input.txt"),
+			"utf8"
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
+		while (true) {  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
+	} finally {  
+		in.close();  
+	}
+	
+	Writer out = new BufferedWriter(
+		new OutputStreamReader(
+			new FileOutputStream("java-test/output.txt"),
+			"utf8"
+		)
+	); 
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
+} catch (FileNotFoundException e) {  
+	System.out.println("Cannot open file:" + e.getMessage());  
+} catch (IOException e) {  
+	System.out.println("Cannot read or write: " + e.getMessage());  
+}
+```
+
+(На [сайте курса](https://www.kgeorgiy.info/courses/prog-intro/index.html) есть более подробные примеры кода, если вы захотите посмотреть.)
 
 <br/>
 
-Второй вариант --- мы всё равно для каждого символа вызываем по методу. Тоже не очень быстро. Однако ``Reader`` поддерживает блочный ввод.
-```
-[input.txt]
-hello itmo
-```
+Давайте заметим, что если мы удалим один ``catch``, то код продолжит компилироваться:
+
 ```java
 try {  
-	Reader reader = new BufferedReader(
-		new FileReader("java-test/input.txt")
-	);  
-	try {  
-		StringBuilder s = new StringBuilder(); 
-		char[] buffer = new char[3]; 
+	Reader in = new BufferedReader(
+		new InputStreamReader(
+			new FileInputStream("java-test/input.txt"),
+			"utf8"
+		)
+	); 
+	StringBuilder sb = new StringBuilder();
+	try {
 		while (true) {  
-			int read = reader.read(buffer);  
-			if (read == -1) break;  
-			s.append(new String(buffer));  
-		}  
-		System.out.println(s.toString());  
+			String line = in.readLine();
+			if (line == null) break;
+			sb.append(line);
+		}
 	} finally {  
-		reader.close();  
-	}  
+		in.close();  
+	}
+	
+	Writer out = new BufferedWriter(
+		new OutputStreamReader(
+			new FileOutputStream("java-test/output.txt"),
+			"utf8"
+		)
+	); 
+	try {
+		out.write(sb.toString());
+	} finally {
+		out.close();
+	}
 } catch (IOException e) {  
-	System.out.println("Input read error: " + e.getMessage());  
+	System.out.println("Cannot read or write: " + e.getMessage());  
 }
 ```
-```java
-hello itmotm
-```
 
-<---- 46:00
+> Возникает вопрос, а почему?
 
-<br/> 
+Если почитать документацию, то можно понять, что **FileNotFoundException** является **IOException**, поэтому Java это устраивает.
 
-Как написано в [документации](https://docs.oracle.com/javase/7/docs/api/java/io/BufferedReader.html), в ``BufferedReader`` нужно оборачивать ``Reader``, у которого метод ``.read()`` дорог по времени. Также можно считать по несколько символов сразу, что мы и делаем с помощью массива `buffer`. Метод ``.read(char[])`` у ``BufferedReader`` возвращает количество считанных символов, или -1, если всё уже считали.
+Более того, если мы поменяем эти два ``catch``'а местами, то Java это перестанет устраивать и она начнет нам сообщать, что **FileNotFoundException** уже пойман, потому что он являлся **IOException** и здесь мы его уже обработали.
 
-Однако возникает вопрос --- у нас в ``input.txt`` слово ``hello itmo``, а программа выводит какое-то ``hello itmotm``! Дело в том, что перед очередным чтением в ``buffer``, мы сам ``buffer`` не очищаем, а метод  ``.read(char[])`` пытается запихать в ``buffer`` только сколько он может, и если у нас на очередной итерации символов в файле останется меньше, чем размер ``buffer``, то он запишет только их, и не станет трогать остальные.
+В этом случае второй ``catch`` никогда не будет выполнен, а как мы знаем Java любит предупреждать, если у нас есть код, который никогда не будет выполнен.
 
-```java
-StringBuilder s = new StringBuilder();  
-char[] buffer = new char[3];  
-while (true) {  
-    int read = reader.read(buffer);  
-    if (read < 0) break;  
-    s.append(new String(buffer, 0, read));  
-}  
-System.out.println(s.toString());
-```
-```
-hello itmo
-```
+Формально у нас не множество ``catch``-блоков, а именно последовательность, и мы попадаем в первый ``catch``-блок, совпадающий по типу.
 
-Вот так лучше. Конечно, в реальной жизни размер ``buffer`` будет не 3, а что-то вроде 1024. Кстати, никто не гарантирует, что если ``read`` вернул символов меньше, чем длина буффера, то файл закончился. Формально, контракт метода ``.read(char[])`` гарантирует, что вернёт столько символов, сколько может прямо сейчас, если прочитал хотя бы один, ну или будет ждать, пока появится что-то новое. Если эти символы не из файла, или этот файл находится где-то по сети, и целиком не доступен, то нам могут выдавать кусочками того размера, которого поступают данные. Именно поэтому, данные закончились, только тогда, когда нам вернули -1.
+### ``PrintWriter`` и его брат ``PrintStream``
 
-Итого --- блочный ввод, отличным образом работает, но нужно не забывать, сколько мы символов прочли, и аккуратно это использовать. По времени, конечно, блочный ввод работает быстрее, чем пассивный. Кстати, одновременно читать блоками из ``BufferedReader`` не очень полезно. То есть ``BufferedReader`` будет пытаться буфферизировать, но у него ничего не выйдет, так как мы сами читаем блоком. Но если блоки маленькие, то это будет работать.
+Существует класс ``PrintWriter``, и его аналог ``PrintStream``. 
 
-50:46
+Преимуществом этих классов является то, что у них есть методы ``print()`` и ``println()``, более того ``System.out`` это просто экземпляр ``PrintStream``.
+
+Но тогда возникает вопрос, что происходит с ошибками. 
+
+> Что вообще происходит, когда в ``System.out`` мы не можем ничего вывести?
+
+Происходит буквально ничего. Ошибка будет проигнорирована. Соответственно, можно ли использовать ``PrintWriter`` и ``PrintStream`` для того, чтобы надежно писать в файлы? 
+
+Нельзя. Получается, вы писали в файл, где-то в середине у вас кончилось место на диске, но об этом никто не узнал. Плохая идея.
+
+В целом, у них есть замечательный метод ``cheackError()``, который позволяет узнать произошла ли какая-то ошибка. К сожалению вы не сможете узнать, что это была за ошибка, но можно хотя бы узнать, что то вообще сломалось.
+
+В целом использовать для сколько нибудь надежного кода ``PrintWriter`` и ``PrintStream`` не рекомендуется.
+
+
